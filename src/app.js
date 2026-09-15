@@ -17,6 +17,7 @@ const ALLOWED_ORIGINS = [
   "http://192.168.1.7:5173",
   "http://172.16.0.1:5173",
   "https://ectyre.com", // Origen de producción original
+  "https://www.ectyre.com", // Origen con subdominio www
   "https://ectyresa-com.vercel.app" // Origen de producción de Vercel
 ];
 
