@@ -11,7 +11,8 @@ const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  const dbUrl = process.env[config.use_env_variable] || "postgresql://postgres:root@127.0.0.1:5433/apiectyre";
+  sequelize = new Sequelize(dbUrl, config);
 } else {
   sequelize = new Sequelize(
     config.database,
