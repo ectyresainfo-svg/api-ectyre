@@ -10,10 +10,24 @@ class MediaService {
     if (search && search.trim()) {
       where.nombre = { [Op.iLike]: `%${search.trim()}%` };
     }
-    return MediaItem.findAll({
-      where,
-      order: [["createdAt", "DESC"]],
-    });
+    try {
+      return await MediaItem.findAll({
+        where,
+        order: [["createdAt", "DESC"]],
+      });
+    } catch (err) {
+      console.warn("MediaItem table error, attempting sync:", err.message);
+      try {
+        await MediaItem.sync();
+        return await MediaItem.findAll({
+          where,
+          order: [["createdAt", "DESC"]],
+        });
+      } catch (syncErr) {
+        console.error("Failed to sync MediaItem table:", syncErr.message);
+        return [];
+      }
+    }
   }
 
   async getById(id) {
