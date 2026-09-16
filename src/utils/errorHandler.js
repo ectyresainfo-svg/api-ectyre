@@ -1,6 +1,13 @@
 const errorHandler = (error, req, res, _next) => {
   const isProduction = process.env.NODE_ENV === "production";
 
+  // Asegurar cabeceras CORS en respuestas de error para evitar que el navegador las bloquee como Network Error
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+  }
+
   // ─── Log interno (nunca exponer al cliente) ──────────────────────────
   if (!isProduction) {
     console.error("❌ [ErrorHandler]", {

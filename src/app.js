@@ -32,8 +32,14 @@ const corsOptions = {
       return callback(null, true);
     }
     
-    // Permitir si el origin está en la lista blanca explícita, o si estamos en desarrollo
-    if (ALLOWED_ORIGINS.includes(origin) || process.env.NODE_ENV !== "production") {
+    // Permitir si el origin está en la lista blanca, o es subdominio de ectyre.com o vercel.app, o si estamos en desarrollo
+    const esPermitido =
+      ALLOWED_ORIGINS.includes(origin) ||
+      /^https?:\/\/([a-zA-Z0-9-]+\.)*ectyre\.com$/.test(origin) ||
+      /^https?:\/\/([a-zA-Z0-9-]+\.)*vercel\.app$/.test(origin) ||
+      process.env.NODE_ENV !== "production";
+
+    if (esPermitido) {
       return callback(null, true);
     }
 
