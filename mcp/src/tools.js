@@ -58,17 +58,28 @@ export function createServer() {
 
   server.registerTool('buscar_por_vehiculo', {
     title: 'Buscar llantas compatibles con un vehículo',
-    description: 'Busca llantas compatibles según la marca, modelo y año del vehículo del cliente.',
+    description: 'Busca llantas compatibles según la marca, modelo y año del vehículo del cliente. Los tres datos son obligatorios; si falta alguno, pídeselo al cliente. Usa listar_vehiculos para ver qué marcas y modelos existen.',
     inputSchema: {
       marca: z.string().describe('Marca del vehículo, ej. Toyota'),
-      modelo: z.string().optional().describe('Modelo, ej. Hilux'),
-      anio: z.number().int().min(1950).max(2100).optional().describe('Año, ej. 2018'),
+      modelo: z.string().describe('Modelo, ej. Hilux'),
+      anio: z.number().int().min(1950).max(2100).describe('Año, ej. 2018'),
       limite,
     },
     annotations: readOnly,
   }, safe(async ({ marca, modelo, anio, limite: l }) => {
     const data = await apiGet('/productos/buscar-vehiculo', { marca, modelo, anio });
     return text(formatProductList(data, { limite: l, vacio: 'No hay llantas registradas como compatibles con ese vehículo. Sugiere buscar por medida.' }));
+  }));
+
+  server.registerTool('listar_vehiculos', {
+    title: 'Listar vehículos registrados',
+    description: 'Lista las marcas de vehículos y sus modelos registrados en el catálogo. Útil para validar lo que dice el cliente antes de usar buscar_por_vehiculo.',
+    inputSchema: { marca: z.string().optional().describe('Filtra por marca, ej. Toyota') },
+    annotations: readOnly,
+  }, safe(async ({ marca }) => {
+    let data = (await apiGet('/vehiculos/marcas/completo')) || [];
+    if (marca) data = data.filter((m) => m.nombre.toLowerCase().includes(marca.toLowerCase()));
+    return text(data.map((m) => `${m.nombre}: ${(m.modelos || []).map((x) => `${x.nombre}${x.tipoVehiculo ? ` (${x.tipoVehiculo})` : ''}`).join(', ') || 'sin modelos'}`).join('\n') || 'No hay vehículos registrados con ese filtro.');
   }));
 
   server.registerTool('detalle_producto', {

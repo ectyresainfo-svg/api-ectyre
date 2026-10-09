@@ -21,13 +21,13 @@
    - Endpoint URL: la URL del MCP.
    - Server Transport: **HTTP Streamable**.
    - Authentication: Bearer, con una credencial nueva que guarde el token.
-   - Tools to Include: *All* (son 9 herramientas, todas de lectura).
+   - Tools to Include: *All* (son 10 herramientas, todas de lectura).
 3. Ajusta el prompt del agente (ver abajo).
 4. Prueba con las preguntas de la tabla.
 
 ## Herramientas disponibles
 
-`buscar_productos(texto)`, `buscar_por_medida(ancho, alto, aro)`, `buscar_por_vehiculo(marca, modelo, anio)`,
+`buscar_productos(texto)`, `buscar_por_medida(ancho, alto, aro)`, `buscar_por_vehiculo(marca, modelo, anio)` (los 3 obligatorios), `listar_vehiculos(marca?)`,
 `detalle_producto(id)`, `listar_productos(idTipoProducto, idMarca, destacados, soloOfertas)`,
 `recomendaciones(aro)`, `listar_tipos_producto()`, `listar_marcas()`, `listar_modelos()`.
 

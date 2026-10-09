@@ -13,7 +13,8 @@ para un agente de IA (por ejemplo el bot de WhatsApp en n8n).
 |---|---|
 | `buscar_productos` | Texto libre, medida ("225/75R15"), marca o modelo |
 | `buscar_por_medida` | ancho / alto / aro |
-| `buscar_por_vehiculo` | marca, modelo y año del vehículo |
+| `buscar_por_vehiculo` | marca, modelo y año del vehículo (los 3 obligatorios) |
+| `listar_vehiculos` | Marcas y modelos de vehículos registrados |
 | `detalle_producto` | Ficha completa por ID |
 | `listar_productos` | Filtros por tipo, marca, destacados y ofertas |
 | `recomendaciones` | Alternativas del mismo aro |
