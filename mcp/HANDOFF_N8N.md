@@ -8,9 +8,9 @@
 
 | Dato | Valor |
 |---|---|
-| URL del MCP | `https://<PROYECTO-MCP>.vercel.app/mcp` ← **rellenar tras desplegar** |
+| URL del MCP | `https://ectyre-mcp.vercel.app/mcp` |
 | Transporte | **Streamable HTTP** (sin estado) |
-| Autenticación | Header `Authorization: Bearer <MCP_TOKEN>` (Credencial tipo *Header Auth* / *Bearer Auth* en n8n; **no** pegues el token en el prompt ni en un nodo Code) |
+| Autenticación | Header `Authorization: Bearer <MCP_TOKEN>` (Credencial tipo *Header Auth* / *Bearer Auth*; el token te lo entrega el dueño del proyecto aparte en n8n; **no** pegues el token en el prompt ni en un nodo Code) |
 | Salud | `GET <URL base>/health` → `{"ok":true}` |
 | Permisos | Solo lectura. No puede cambiar precios ni stock. |
 
