@@ -62,6 +62,8 @@ class DireccionService {
   }
 
   // Actualizar una dirección (solo si pertenece al cliente)
+  // 🔒 Whitelist explícito: `data` nunca se pasa completo a `.update()`, o un
+  // cliente podría enviar { idCliente: X } y mover la dirección a otra cuenta.
   async updateDireccion(id, idCliente, data) {
     try {
       const direccion = await Direccion.findOne({
@@ -80,7 +82,14 @@ class DireccionService {
         );
       }
 
-      await direccion.update(data);
+      const cambios = {};
+      if (data.provincia !== undefined) cambios.provincia = data.provincia;
+      if (data.ciudad !== undefined) cambios.ciudad = data.ciudad;
+      if (data.direccionCompleta !== undefined) cambios.direccionCompleta = data.direccionCompleta;
+      if (data.referencia !== undefined) cambios.referencia = data.referencia;
+      if (data.esPrincipal !== undefined) cambios.esPrincipal = data.esPrincipal;
+
+      await direccion.update(cambios);
 
       const actualizada = await Direccion.findByPk(id);
       return actualizada;

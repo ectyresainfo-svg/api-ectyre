@@ -8,8 +8,20 @@ const getAll = catchError(async (req, res) => {
   res.json({ success: true, message: "Promociones obtenidas", data: items });
 });
 
+// 🌍 GET /api/v1/promociones — catálogo público, solo promociones activas
+const getAllPublicas = catchError(async (req, res) => {
+  const items = await promocionService.getAllPublicas();
+  res.json({ success: true, message: "Promociones obtenidas", data: items });
+});
+
 const getById = catchError(async (req, res) => {
   const item = await promocionService.getById(req.params.id);
+  res.json({ success: true, message: "Promoción obtenida", data: item });
+});
+
+// 🌍 GET /api/v1/promociones/:id — detalle público, nunca una desactivada
+const getByIdPublico = catchError(async (req, res) => {
+  const item = await promocionService.getByIdPublico(req.params.id);
   res.json({ success: true, message: "Promoción obtenida", data: item });
 });
 
@@ -46,4 +58,4 @@ const toggleActivo = catchError(async (req, res) => {
   res.json({ success: true, message: "Estado cambiado", data: item });
 });
 
-module.exports = { getAll, getById, create, update, remove, toggleActivo };
+module.exports = { getAll, getAllPublicas, getById, getByIdPublico, create, update, remove, toggleActivo };

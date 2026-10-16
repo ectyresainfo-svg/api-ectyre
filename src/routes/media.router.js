@@ -11,7 +11,7 @@ const { verifyJWT, isAdmin } = require("../middlewares/auth.middleware");
 const {
   uploadMediaSingle,
   uploadMediaMultiple,
-} = require("../config/cloudinary");
+} = require("../middlewares/upload.middleware");
 
 const router = express.Router();
 

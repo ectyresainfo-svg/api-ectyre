@@ -99,8 +99,12 @@ class CarritoService {
     return await this.getCarritoDetallado(carritoId);
   }
 
-  async actualizarItem(itemId, cantidad) {
-    const item = await ItemCarrito.findByPk(itemId, {
+  // 🔒 El item debe pertenecer a `carritoId` (el carrito de quien llama).
+  // Buscar solo por itemId permitía modificar el carrito de cualquier otro
+  // cliente adivinando o probando su idItem.
+  async actualizarItem(carritoId, itemId, cantidad) {
+    const item = await ItemCarrito.findOne({
+      where: { idItem: itemId, idCarrito: carritoId },
       include: [{ model: Producto, as: "producto" }],
     });
 
@@ -108,8 +112,8 @@ class CarritoService {
       throw new NotFoundError("Item no encontrado");
     }
 
-    if (cantidad <= 0) {
-      throw new ValidationError("La cantidad debe ser mayor a 0");
+    if (!Number.isInteger(cantidad) || cantidad <= 0) {
+      throw new ValidationError("La cantidad debe ser un número entero mayor a 0");
     }
 
     if (item.producto.stock < cantidad) {
@@ -120,16 +124,18 @@ class CarritoService {
 
     await item.update({ cantidad });
 
-    return await this.getCarritoDetallado(item.idCarrito);
+    return await this.getCarritoDetallado(carritoId);
   }
 
-  async eliminarItem(itemId) {
-    const item = await ItemCarrito.findByPk(itemId);
+  // 🔒 Mismo criterio que actualizarItem: el item debe pertenecer a `carritoId`.
+  async eliminarItem(carritoId, itemId) {
+    const item = await ItemCarrito.findOne({
+      where: { idItem: itemId, idCarrito: carritoId },
+    });
     if (!item) {
       throw new NotFoundError("Item no encontrado");
     }
 
-    const carritoId = item.idCarrito;
     await item.destroy();
 
     return await this.getCarritoDetallado(carritoId);

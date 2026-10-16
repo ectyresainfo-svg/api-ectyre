@@ -5,7 +5,7 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class TipoUso extends Model {
     static associate(models) {
-      // Tipo de uso de un modelo (ej: AT = All Terrain, MT = Mud Terrain)
+      // Tipo de uso de un modelo (ej: AT = Todo Terreno, MT = Terreno Lodoso / Fango)
       this.hasMany(models.Modelo, {
         foreignKey: "idTipoUso",
         as: "modelos",

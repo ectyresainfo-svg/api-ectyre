@@ -9,8 +9,20 @@ class PromocionService {
     return ImagenPromocion.findAll({ order: [["createdAt", "DESC"]] });
   }
 
+  // 🌍 Catálogo público (tienda): solo promociones activas
+  async getAllPublicas() {
+    return ImagenPromocion.findAll({ where: { activo: true }, order: [["createdAt", "DESC"]] });
+  }
+
   async getById(id) {
     const item = await ImagenPromocion.findByPk(id);
+    if (!item) throw new NotFoundError("Imagen de promoción no encontrada");
+    return item;
+  }
+
+  // 🌍 Detalle público: nunca expone promociones desactivadas
+  async getByIdPublico(id) {
+    const item = await ImagenPromocion.findOne({ where: { idImagenPromocion: id, activo: true } });
     if (!item) throw new NotFoundError("Imagen de promoción no encontrada");
     return item;
   }

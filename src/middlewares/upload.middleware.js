@@ -1,10 +1,21 @@
 "use strict";
 
-const { uploadLlanta, uploadMarca, uploadProducto, uploadEspecificacion } = require("../config/cloudinary");
+const {
+  uploadLlanta,
+  uploadMarca,
+  uploadProducto,
+  uploadEspecificacion,
+  uploadMediaSingle: mediaSingle,
+  uploadMediaMultiple: mediaMultiple,
+} = require("../config/cloudinary");
 const { MAX_IMAGENES_PRODUCTO } = require("../utils/productoConstantes");
 
 // Traduce los errores de multer a mensajes claros para el admin
 const mensajeErrorMulter = (err, mensajePorDefecto) => {
+  // Cloudinary rechaza con un objeto plano { message, http_code }, no con un Error
+  if (err.http_code) {
+    return `Cloudinary rechazó la imagen (${err.http_code}): ${err.message}`;
+  }
   if (err.code === "LIMIT_UNEXPECTED_FILE" && err.field === "imagenes") {
     return `Máximo ${MAX_IMAGENES_PRODUCTO} imágenes por producto`;
   }
@@ -20,7 +31,9 @@ const mensajeErrorMulter = (err, mensajePorDefecto) => {
 const manejarSubida = (middlewareMulter, mensajePorDefecto) => (req, res, next) => {
   middlewareMulter(req, res, (err) => {
     if (err) {
-      return res.status(400).json({
+      // Sin esto Vercel solo registra "[object Object]" y el motivo real se pierde
+      console.error(`[Upload] ${req.method} ${req.originalUrl}:`, err.message || JSON.stringify(err), err.http_code || err.code || "");
+      return res.status(err.http_code >= 500 ? 502 : 400).json({
         success: false,
         message: mensajeErrorMulter(err, mensajePorDefecto),
       });
@@ -61,6 +74,12 @@ const uploadImagenesMarca = manejarSubida(
 const uploadIconoEspecificacion = manejarSubida(uploadEspecificacion.single("icono"), "Error al subir el ícono");
 
 /**
+ * Media general: 1 imagen (field "file") o hasta 10 (field "files") — usado por /admin/media
+ */
+const uploadMediaSingle = manejarSubida(mediaSingle, "Error al subir la imagen");
+const uploadMediaMultiple = manejarSubida(mediaMultiple, "Error al subir las imágenes");
+
+/**
  * Imagen de promoción / banner (field "imagen") — usado por /admin/promociones
  */
 const uploadImagenPromocion = manejarSubida(uploadLlanta.single("imagen"), "Error al subir la imagen");
@@ -72,4 +91,6 @@ module.exports = {
   uploadImagenesMarca,
   uploadIconoEspecificacion,
   uploadImagenPromocion,
+  uploadMediaSingle,
+  uploadMediaMultiple,
 };

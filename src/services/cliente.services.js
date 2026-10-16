@@ -4,7 +4,6 @@ const {
   ConflictError,
   UnauthorizedError,
 } = require("../utils/customErrors");
-const { Op } = require("sequelize");
 const jwt = require("jsonwebtoken");
 
 class ClienteService {
@@ -25,9 +24,18 @@ class ClienteService {
     }
 
     // Crear cliente (el hook beforeCreate encriptará la contraseña)
+    // 🔒 Whitelist explícito: nunca pasar el body completo a Cliente.create,
+    // o cualquiera podría registrarse con role: "admin" (o activo, googleId…)
     const cliente = await Cliente.create({
-      ...data,
+      tipoIdentificacion: data.tipoIdentificacion,
+      numeroIdentificacion: data.numeroIdentificacion,
+      nombres: data.nombres,
+      apellidos: data.apellidos,
+      email: data.email,
+      telefono: data.telefono,
       passwordHash: data.password,
+      role: "cliente",
+      activo: true,
     });
 
     // Generar token JWT igual que en login (auto-login al registrarse)
@@ -104,6 +112,9 @@ class ClienteService {
   }
 
   // Actualizar perfil
+  // 🔒 Whitelist explícito: solo los campos que ProfilePage.jsx permite editar.
+  // Nunca aceptar el body completo — de lo contrario cualquier cliente podría
+  // enviar { role: "admin" }, { activo: true } o cambiar su email/password sin verificación.
   async updateClientePerfil(idCliente, data) {
     const cliente = await Cliente.findByPk(idCliente);
 
@@ -111,17 +122,12 @@ class ClienteService {
       throw new NotFoundError("Cliente no encontrado");
     }
 
-    // No permitir actualizar email si ya existe en otro cliente
-    if (data.email && data.email !== cliente.email) {
-      const existeEmail = await Cliente.findOne({
-        where: { email: data.email, idCliente: { [Op.ne]: idCliente } },
-      });
-      if (existeEmail) {
-        throw new ConflictError("El email ya está registrado");
-      }
-    }
+    const cambios = {};
+    if (data.nombres !== undefined) cambios.nombres = data.nombres;
+    if (data.apellidos !== undefined) cambios.apellidos = data.apellidos;
+    if (data.telefono !== undefined) cambios.telefono = data.telefono;
 
-    await cliente.update(data);
+    await cliente.update(cambios);
 
     const clienteData = cliente.toJSON();
     delete clienteData.passwordHash;

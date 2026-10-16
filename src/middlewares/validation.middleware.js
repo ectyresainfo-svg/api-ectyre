@@ -119,6 +119,18 @@ const validateCarritoItem = [
 const validateId = [param("id").isInt().withMessage("ID inválido"), validate];
 
 /**
+ * Validaciones para actualizar la cantidad de un item del carrito
+ */
+const validateCantidad = [
+  body("cantidad")
+    .notEmpty()
+    .withMessage("La cantidad es requerida")
+    .isInt({ min: 1 })
+    .withMessage("Cantidad debe ser un número entero mayor a 0"),
+  validate,
+];
+
+/**
  * Validaciones para Dirección
  */
 const validateDireccionData = [
@@ -186,6 +198,7 @@ module.exports = {
   validatePedidoData,
   validateCarritoItem,
   validateId,
+  validateCantidad,
   validateDireccionData,
   validateCatalogo,
   validateCompatibilidad,

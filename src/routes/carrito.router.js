@@ -10,6 +10,7 @@ const { verifyJWT } = require("../middlewares/auth.middleware");
 const {
   validateCarritoItem,
   validateId,
+  validateCantidad,
 } = require("../middlewares/validation.middleware");
 
 const router = express.Router();
@@ -26,7 +27,7 @@ const optionalAuth = (req, res, next) => {
 // Rutas del carrito
 router.get("/", optionalAuth, getCarrito); // 🌍/🔒 Autenticado o sesión
 router.post("/agregar", optionalAuth, validateCarritoItem, agregarItem); // 🌍/🔒 Autenticado o sesión
-router.put("/actualizar/:id", optionalAuth, validateId, actualizarItem); // 🌍/🔒 Autenticado o sesión
+router.put("/actualizar/:id", optionalAuth, validateId, validateCantidad, actualizarItem); // 🌍/🔒 Autenticado o sesión
 router.delete("/eliminar/:id", optionalAuth, validateId, eliminarItem); // 🌍/🔒 Autenticado o sesión
 router.delete("/vaciar", optionalAuth, vaciarCarrito); // 🌍/🔒 Autenticado o sesión
 

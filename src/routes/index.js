@@ -22,7 +22,7 @@ router.get("/", (req, res) => {
   res.json({
     success: true,
     message: "Bienvenido a API Ectyre v1",
-    endpoints: ["/auth", "/productos", "/clientes", "/carrito", "/pedidos", "/direcciones", "/vehiculos", "/catalogos", "/compatibilidad", "/admin", "/admin/productos", "/admin/promociones"]
+    endpoints: ["/auth", "/productos", "/clientes", "/carrito", "/pedidos", "/direcciones", "/vehiculos", "/catalogos", "/compatibilidad", "/promociones", "/admin", "/admin/productos", "/admin/promociones"]
   });
 });
 
@@ -40,7 +40,8 @@ router.use("/vehiculos", vehiculoRouter);
 router.use("/catalogos", catalogoRouter);          // 📋 Niveles de inventario (tipos, marcas, modelos, medidas, especificaciones)
 router.use("/productos", productoRouter);         // 📦 Catálogo público de productos
 router.use("/compatibilidad", compatibilidadRouter); // 🔗 Compatibilidad llanta-vehículo
-router.use("/admin/promociones", require("./promocion.router")); // 🖼️ Imágenes de promoción
+router.use("/promociones", require("./promocion.public.router")); // 🌍 Catálogo público de promociones (solo activas)
+router.use("/admin/promociones", require("./promocion.router")); // 🔒 CRUD de promociones (panel admin)
 router.use("/admin/media", require("./media.router")); // 📁 Biblioteca de medios (Cloudinary)
 
 module.exports = router;
